@@ -1,0 +1,62 @@
+{
+    "configurations": [
+        {
+            "name": "!!! WARNING !!! AUTO-GENERATED FILE, PLEASE DO NOT MODIFY IT AND USE https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags"
+        },
+        {
+            "name": "Mac",
+            "macFrameworkPath": [],
+            "includePath": [
+                "/Users/orencollaco/.platformio/lib/ArduinoSwitch",
+                "/Users/orencollaco/.platformio/lib/ArduinoTimer",
+                "/Users/orencollaco/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                "/Users/orencollaco/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                "/Users/orencollaco/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                "/Users/orencollaco/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                "/Users/orencollaco/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                "/Users/orencollaco/Documents/PlatformIO/Projects/RGBController/include",
+                "/Users/orencollaco/Documents/PlatformIO/Projects/RGBController/src",
+                "/Users/orencollaco/.platformio/packages/framework-arduino-avr/cores/arduino",
+                "/Users/orencollaco/.platformio/packages/framework-arduino-avr/variants/eightanaloginputs",
+                "/Users/orencollaco/.platformio/packages/tool-unity",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "/Users/orencollaco/.platformio/lib/ArduinoSwitch",
+                    "/Users/orencollaco/.platformio/lib/ArduinoTimer",
+                    "/Users/orencollaco/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                    "/Users/orencollaco/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                    "/Users/orencollaco/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                    "/Users/orencollaco/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                    "/Users/orencollaco/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                    "/Users/orencollaco/Documents/PlatformIO/Projects/RGBController/include",
+                    "/Users/orencollaco/Documents/PlatformIO/Projects/RGBController/src",
+                    "/Users/orencollaco/.platformio/packages/framework-arduino-avr/cores/arduino",
+                    "/Users/orencollaco/.platformio/packages/framework-arduino-avr/variants/eightanaloginputs",
+                    "/Users/orencollaco/.platformio/packages/tool-unity",
+                    ""
+                ]
+            },
+            "defines": [
+                "PLATFORMIO=40304",
+                "ARDUINO_AVR_NANO",
+                "F_CPU=16000000L",
+                "ARDUINO_ARCH_AVR",
+                "ARDUINO=10808",
+                "__AVR_ATmega328P__",
+                ""
+            ],
+            "intelliSenseMode": "clang-x64",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "compilerPath": "/Users/orencollaco/.platformio/packages/toolchain-atmelavr/bin/avr-gcc",
+            "compilerArgs": [
+                "-mmcu=atmega328p",
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}
