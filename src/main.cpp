@@ -3,21 +3,24 @@
 #include <Switch.h>
 #include <EEPROM.h>
 
+#define StepValue 5
+
 TimerClass T1;
 SwitchClass SwitchUp, SwitchDown, SwitchMode;
 
-volatile const uint8_t LedPin = 13;
-volatile const uint8_t RedChannel = 11;
-volatile const uint8_t GreenChannel = 10;
-volatile const uint8_t BlueChannel = 9;
-volatile const uint8_t DownButton = 8;
-volatile const uint8_t ModeButton = 7;
-volatile const uint8_t UpButton = 6;
-volatile const uint8_t BlinkToggle = A5;
-volatile bool LedState = false, BlinkEnabled = false, SleepEnabled = true;
+const uint8_t LedPin = 13;
+const uint8_t RedChannel = 10;
+const uint8_t GreenChannel = 5;
+const uint8_t BlueChannel = 9;
+const uint8_t DownButton = 8;
+const uint8_t ModeButton = 7;
+const uint8_t UpButton = 6;
+const uint8_t BlinkToggle = A5;
+volatile bool LedState = false, BlinkEnabled = false, SleepEnabled = true, SaveFlag = false, IncrementFlag = false, DecrementFlag = false, ModeChangeFlag = false;
 
-volatile uint8_t Mode = 0;
-volatile uint8_t Values[3];
+uint8_t Mode = 0, Temp = 0;
+uint8_t Values[3];
+
 
 void readSavedValues(){
   EEPROM.get(0, Mode);
@@ -34,7 +37,79 @@ void saveValues(){
 }
 
 void updateChannels(){
-  analogWrite(RedChannel, )
+  analogWrite(RedChannel, Values[0]);
+  analogWrite(GreenChannel, Values[1]);
+  analogWrite(BlueChannel, Values[2]);
+}
+
+void changeMode(){
+  if(Mode >= 3)
+    Mode = 0;
+  else
+    Mode += 1;
+  SaveFlag = true;
+  saveValues();
+  ModeChangeFlag = false;
+}
+
+void incrementPressed(uint8_t Id){
+  IncrementFlag = true;
+}
+
+void decrementPressed(uint8_t Id){
+  DecrementFlag = true;
+}
+
+void modeChangePressed(uint8_t Id){
+  ModeChangeFlag = true;
+}
+
+void incrementChannel(){
+  if(Mode < 3){
+    if(Values[Mode] < (255 - (StepValue + 2))){
+      Values[Mode] += StepValue;
+      SaveFlag = true;
+      saveValues();
+    }
+    else
+    {
+      Values[Mode] = 255;
+      SaveFlag = true;
+      saveValues();
+    }
+  }
+  if(Mode == 3){
+    for(int i = 0; i <= 2; i += 1){
+       Mode = i;
+       incrementChannel();
+    }
+    Mode = 3;
+  }
+  IncrementFlag = false;
+}
+
+void decrementChannel(){
+  if(Mode < 3){
+    if(Values[Mode] > (StepValue + 2)){
+      Values[Mode] -= StepValue;
+      SaveFlag = true;
+      saveValues();
+    }
+    else
+    {
+      Values[Mode] = 0;
+      SaveFlag = true;
+      saveValues();
+    }
+  }
+  if(Mode == 3){
+    for(int i = 0; i <= 2; i += 1){
+      Mode = i; 
+      decrementChannel();
+    }
+    Mode = 3;
+  }
+  DecrementFlag = false;
 }
 
 void toggleLed(uint8_t Id){
@@ -56,6 +131,7 @@ void toggleBlinking(uint8_t switchId){
 
 void sleep(){
   T1.powerDown(SLEEP_MODE_IDLE);          //Stop CPU and FLASH clocks (Using other sleep modes causes delay in wake up)
+  
 }
 
 void setup() {
@@ -63,9 +139,9 @@ void setup() {
   pinMode(DownButton, INPUT_PULLUP);
   pinMode(ModeButton, INPUT_PULLUP);
   pinMode(UpButton, INPUT_PULLUP);
-  pinMode(RedChannel, OUTPUT);
-  pinMode(GreenChannel, OUTPUT);
-  pinMode(BlueChannel, OUTPUT);
+  // pinMode(RedChannel, OUTPUT);
+  // pinMode(GreenChannel, OUTPUT);
+  // pinMode(BlueChannel, OUTPUT);
   
   Serial.begin(9600); Serial.println("Setting up things...");
   T1.begin();                             //It's necessary to call begin on any TimerClass object first, then SwitchClass object
@@ -75,15 +151,15 @@ void setup() {
   SwitchUp.initializeSwitch(UpButton);
   SwitchDown.initializeSwitch(DownButton);
   SwitchMode.initializeSwitch(ModeButton);
-  SwitchUp.shortPress(toggleLed);
-  SwitchUp.longPress(toggleBlinking);
-  SwitchDown.shortPress(toggleLed);
-  SwitchDown.longPress(toggleBlinking);
-  SwitchMode.shortPress(toggleLed);
-  SwitchMode.longPress(toggleBlinking);
-  analogWrite(RedChannel, 128);
-  analogWrite(GreenChannel, 128);
-  analogWrite(BlueChannel, 128);
+  // SwitchUp.longPress(toggleBlinking);
+  // SwitchDown.longPress(toggleBlinking);
+  // SwitchMode.longPress(toggleBlinking);
+  SwitchUp.shortPress(incrementPressed);
+  SwitchDown.shortPress(decrementPressed);
+  SwitchMode.shortPress(modeChangePressed);
+  SleepEnabled = true;
+  readSavedValues();
+  updateChannels();
   Serial.println("Done.");
 }
 
@@ -91,5 +167,24 @@ void loop() {
   // put your main code here, to run repeatedly:
   if(SleepEnabled){
     sleep();
+  }
+  if(IncrementFlag)
+    incrementChannel();
+  if(DecrementFlag)
+    decrementChannel();
+  if(ModeChangeFlag)
+    changeMode();
+  if(SaveFlag){
+    SaveFlag = false;
+    saveValues();
+    updateChannels();
+    Serial.print("Mode = ");
+    Serial.print(Mode);
+    Serial.print(" Red = ");
+    Serial.print(Values[0]);
+    Serial.print(" Green = ");
+    Serial.print(Values[1]);
+    Serial.print(" Blue = ");
+    Serial.println(Values[2]);
   }
 }
